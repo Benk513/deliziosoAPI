@@ -1,6 +1,6 @@
 const Menu = require('./../models/menuModel')
 
-exports.getMenus = async (req, res) => {
+exports.getAllMenus = async (req, res) => {
 
     try {
         
@@ -46,15 +46,15 @@ exports.getMenu = async (req, res) => {
 }
 
 exports.createMenu = async (req, res) => {
-    const newMenu = new Menu(req.body);
+     
     try {
-        await newMenu.save();
+        const newMenu = await Menu.create(req.body);         
         res.status(201).json({
             status: 'success',
             data: newMenu
         });
 
-        res.status(200).json({
+        res.status(201).json({
             status: 'success',
             data: newMenu
         })
@@ -85,10 +85,34 @@ exports.updateMenu = async (req, res) => {
         })
         
     } catch (error) {
-        res.status(400).json({
+        res.status(404).json({
             status: 'fail',
             message: error.message
         })
     }
 
 }
+
+
+exports.deleteMenu = async (req, res) => {
+    const id = req.params.id
+    
+
+    try {
+        await Menu.findByIdAndDelete(id)
+        res.status(204).json({
+            status: 'success',
+            data: null
+          });
+
+
+    } catch (error) {
+        res.status(404).json({
+            status: 'fail',
+            message:error.message
+        })
+        
+    }
+}
+
+ 
