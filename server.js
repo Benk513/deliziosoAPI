@@ -11,6 +11,7 @@ const port = process.env.PORT
 // DEFINE THE SERVER
 const app = express()
 
+app.use(express.json())
 
 // ROUTES HANDLING
 
