@@ -22,3 +22,25 @@ exports.getMenus = async (req, res) => {
 
     
 }
+
+exports.getMenu = async (req, res) => {
+
+    const id = req.params.id
+    
+    try {
+        
+        const menu = await Menu.findById(id)
+
+        res.status(200).json({
+            status: 'success',
+            data: menu
+        })
+
+    } catch (error) {
+        res.status(404).json({
+            status: 'fail',
+            message: error.message
+                      
+        })
+    }
+}
