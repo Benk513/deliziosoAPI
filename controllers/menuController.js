@@ -53,6 +53,13 @@ exports.createMenu = async (req, res) => {
             status: 'success',
             data: newMenu
         });
+
+        res.status(200).json({
+            status: 'success',
+            data: newMenu
+        })
+
+
     } catch (error) {
         res.status(400).json({
             status: 'fail',
