@@ -44,3 +44,20 @@ exports.getMenu = async (req, res) => {
         })
     }
 }
+
+exports.createMenu = async (req, res) => {
+    const newMenu = new Menu(req.body);
+    try {
+        await newMenu.save();
+        res.status(201).json({
+            status: 'success',
+            data: newMenu
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: 'fail',
+            message: error.message
+        });
+    }
+    
+}
