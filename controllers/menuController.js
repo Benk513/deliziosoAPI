@@ -68,3 +68,27 @@ exports.createMenu = async (req, res) => {
     }
     
 }
+
+
+exports.updateMenu = async (req, res) => {
+    const id = req.params.id
+    
+    try {        
+        const menu = await Menu.findByIdAndUpdate(id, req.body, {
+            new: true,
+            runValidators: true
+        })
+
+        res.status(200).json({
+            status: 'success',
+            data: menu
+        })
+        
+    } catch (error) {
+        res.status(400).json({
+            status: 'fail',
+            message: error.message
+        })
+    }
+
+}
