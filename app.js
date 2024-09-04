@@ -1,6 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
-
+const AppError= require('./utils/appError')
 const menuRouter = require('./routes/menuRoutes')
 
 const app = express()
@@ -17,8 +17,6 @@ app.use((req, res, next) => {
     console.log('Hello from the middleware');
     next();
 })
-
-
 
 // ROUTES
 app.get('/', (req, res) => {
@@ -39,10 +37,13 @@ app.use('/api/v1/menu', menuRouter)
 
 app.all('*', (req, res, next) => {
      
-    const err = new Error(`can't find ${req.originalUrl} path`)
-    err.statusCode =404
-    err.status ="fail"
-    next(err)
+    // const err = new Error(`can't find ${req.originalUrl} path`)
+    // err.statusCode =404
+    // err.status ="fail"
+    // next(err)
+
+    //call the instance of our errors 
+    new(new AppError(`can't find ${req.originalUrl} path`,404))
 })
 
 app.use((err,req,res,next)=>{
@@ -59,3 +60,14 @@ app.use((err,req,res,next)=>{
 
 
 module.exports =app
+
+/**
+ * il nous faut 
+ * copie de passeport 
+ * 2 photos passeport 5$
+ * certificat medical environ 20 $
+ * acte de naissance 
+ * frais d'inscription 55$ a payer par virement 
+ * frais de formation d'une année entiere 540$
+ * 2 attestations de diplome d'etat (copie conforme) 20$
+ */
