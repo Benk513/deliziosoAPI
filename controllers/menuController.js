@@ -2,7 +2,7 @@ const Menu = require('./../models/menuModel')
 const APIFeatures = require('./../utils/apiFeatures')  
 const catchAsync = require('./../utils/catchAsync')
 
-exports.getAllMenus = catchAsync( async(req, res) => {
+exports.getAllMenus = catchAsync( async(req, res, next) => {
         //EXECUTE QUERY       
         const features = new APIFeatures(Menu.find(), req.query)
             .filter()
@@ -16,30 +16,14 @@ exports.getAllMenus = catchAsync( async(req, res) => {
         })
 })
 
-exports.getMenu = async (req, res) => {
-
-    const id = req.params.id 
-
-    
-    
-    try {
-        
+exports.getMenu = catchAsync(async (req, res) => {
+    const id = req.params.id          
         const menu = await Menu.findById(id)
-
         res.status(200).json({
             status: 'success',
             data: menu
         })
-
-    } catch (error) {
-        res.status(404).json({
-            status: 'fail',
-            message: error.message
-                      
-        })
-    }
-}
-
+})
 
 
 exports.createMenu = catchAsync(async (req, res,next) => {    
@@ -52,11 +36,10 @@ exports.createMenu = catchAsync(async (req, res,next) => {
     
 })
 
-
-exports.updateMenu = async (req, res) => {
+exports.updateMenu =  catchAsync(async (req, res) => {
     const id = req.params.id
     
-    try {        
+     
         const menu = await Menu.findByIdAndUpdate(id, req.body, {
             new: true,
             runValidators: true
@@ -66,33 +49,13 @@ exports.updateMenu = async (req, res) => {
             status: 'success',
             data: menu
         })
-        
-    } catch (error) {
-        res.status(404).json({
-            status: 'fail',
-            message: error.message
-        })
-    }
+})
 
-}
-
-
-exports.deleteMenu = async (req, res) => {
+exports.deleteMenu =catchAsync(  async (req, res) => {
     const id = req.params.id*1
-    try {
         await Menu.findByIdAndDelete(id)
         res.status(204).json({
             status: 'success',
             data: null
-          });
-
-
-    } catch (error) {
-        res.status(404).json({
-            status: 'fail',
-            message:error.message
-        })
-        
-    }
-}
-
+          });    
+})
