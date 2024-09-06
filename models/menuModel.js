@@ -1,13 +1,12 @@
 const mongoose = require('mongoose')
 const validator =require ('validator')
 
-const menuSchema =mongoose.Schema({
+const menuSchema =new mongoose.Schema({
     imageURL: {
         type: String,
         required: true,
         unique: true,
     },
-
     name: {
         type: String,         
         required: [true, 'A menu must have a name'],
@@ -47,7 +46,6 @@ const menuSchema =mongoose.Schema({
         message: 'Discount price ({VALUE}) should be below regular price'
       }
     },
-
     rating: Number,
     //reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
     
@@ -63,9 +61,7 @@ const menuSchema =mongoose.Schema({
     updatedAt: { type: Date, default: Date.now },
 
     availability:Boolean
-
  
 })
-
-module.exports = mongoose.model('Menu', menuSchema)
- 
+const Menu = mongoose.model('Menu', menuSchema)
+module.exports = Menu
