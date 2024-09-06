@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const AppError= require('./utils/appError')
+const globalErrorHandler = require('./controllers/errorController')
 const menuRouter = require('./routes/menuRoutes')
 
 const app = express()
@@ -14,7 +15,13 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json())
 
 app.use((req, res, next) => {
-    console.log('Hello from the middleware');
+
+    if(process.env.NODE_ENV ==="production"){
+        console.log('we in production now ')
+      }else{
+        console.log('we in development now ')
+      }
+    
     next();
 })
 
@@ -43,31 +50,13 @@ app.all('*', (req, res, next) => {
     // next(err)
 
     //call the instance of our errors 
-    new(new AppError(`can't find ${req.originalUrl} path`,404))
+    next(new AppError(`can't find ${req.originalUrl} on the server`,404));
 })
 
-app.use((err,req,res,next)=>{
-
-    err.statusCode =err.statusCode || 500
-    err.status = err.status || 'error'
-
-    res.status(err.statusCode).json({
-        status: err.status,
-        message:err.message
-    })
-
-})
+// this middleware is a special middleware because it's catches all the errors , with the error parameter ,
+// express can know that it is a special middleware 
+// au cas ou il ya erreur on saute la chaine des next() et on atterit ici en final dou pas de next, sinon on continue sa course
 
 
+app.use(globalErrorHandler)
 module.exports =app
-
-/**
- * il nous faut 
- * copie de passeport 
- * 2 photos passeport 5$
- * certificat medical environ 20 $
- * acte de naissance 
- * frais d'inscription 55$ a payer par virement 
- * frais de formation d'une année entiere 540$
- * 2 attestations de diplome d'etat (copie conforme) 20$
- */
