@@ -1,26 +1,27 @@
-const express = require('express')
 const dotenv = require('dotenv')
-const morgan = require('morgan')
+const mongoose = require('mongoose')
+dotenv.config({ path: './config.env' })
+const app = require('./app');
 
-dotenv.config({path:'./config.env'})
+const port = process.env.PORT || 3000
 
-const port = process.env.PORT
-
-
-
-// DEFINE THE SERVER
-const app = express()
-
-app.use(express.json())
-
-// ROUTES HANDLING
-
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-
+// DATABASE CONNEXION
+const DB = process.env.DATABASE.replace(
+    '<password>',
+    process.env.DATABASE_PASSWORD
+);
+mongoose
+  .connect(DB)
+  .then(() => console.log('DB connection successful!'));
 
 // LISTENING THE SERVER 
-app.listen(port, () => {
-    console.log("Server running successully !!")
+const server = app.listen(port, () => {
+    console.log(`Server running on port ${port}...`)
+})    
+
+process.on('unhandledRejection' , err=>{
+  console.log(err.name , err.message)
+  console.log('UNHANDLED REJECTION 🔥 shutting down...')
+  server.close(()=> process.exit(1))
+
 })
