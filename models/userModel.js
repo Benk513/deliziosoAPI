@@ -22,6 +22,13 @@ const userSchema = new mongoose.Schema({
     },
     passwordConfirm:{type:String,
         required:[true,'Please confirm your password'],
+        validate:{
+            // say this function will only execute on CREATE and SAVE
+            validator:function(el){
+                return el ===this.password;
+            },
+            message:'Password are not the same !'
+        }
       
     },
      
@@ -29,4 +36,4 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User',userSchema)
 
-module.exports = Menu
+module.exports = User
