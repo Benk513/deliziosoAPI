@@ -47,6 +47,10 @@ userSchema.pre('save' , async function(next){
     next()
 })
 
+//this is an instance methode for the model and is available for all docs
+userSchema.methods.correctPassword = async function(candidatePassword , userPassword){
+    return await bcrypt.compare(candidatePassword, userPassword);
+}
 const User = mongoose.model('User',userSchema)
 
 module.exports = User
