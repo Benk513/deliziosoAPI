@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
-
-const userSchema = new mongoose.Schema({
+const bcrypt = require('bcryptjs')
+const userSchema = new mongoose.Schema({ 
     name: {
         type:String,
         required:[true, 'Please tell us your name !']
@@ -32,6 +32,17 @@ const userSchema = new mongoose.Schema({
       
     },
      
+})
+
+// mongoose middleware to run b4 save
+userSchema.pre('save' , async function(next){
+    // only run when password modified
+    if(!this.isModified('password')) return next();
+
+    this.password = await bcrypt.hash(this.password,12);
+    //here no need to save passwordConfirm it is required solely for confirmation set to undefined to not save it to db
+    this.passwordConfirm = undefined;
+    next()
 })
 
 const User = mongoose.model('User',userSchema)
