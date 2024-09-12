@@ -118,3 +118,16 @@ exports.getRecommandedMenus =catchAsync(  async (req, res, next) => {
         })
     })
 
+
+exports.getMenusByCategory =catchAsync(  async (req, res, next) => {
+    const category = req.params.category
+
+    const menus = await Menu.find({category})
+
+    res.status(200).json({
+        status: 'success',
+        data: menus
+        })   
+
+})
+
