@@ -21,7 +21,7 @@ mongoose
   .connect(DB)
   .then(() => console.log('DB connection successful!'));
 
-// LISTENING THE SERVER 
+// LISTENING TO THE SERVER 
 const server = app.listen(port, () => {
     console.log(`Server running on port ${port}...`)
 })    

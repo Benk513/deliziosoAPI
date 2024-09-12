@@ -17,6 +17,19 @@ exports.getAllMenus = catchAsync( async(req, res, next) => {
         })
 })
 
+exports.getFeaturedMenus = catchAsync(async(req,res,next) =>{
+    const featuredMenus = await Menu.find({isFeatured:true})
+    if(!featuredMenus) return next(new AppError('No featured products found',404))
+
+    return res.status(200).json({
+        status: 'success',
+        results: featuredMenus.length,
+        data: featuredMenus
+        
+    })
+
+})
+
 exports.getMenu = catchAsync(async (req, res, next) => {
     const id = req.params.id          
         const menu = await Menu.findById(id)
