@@ -25,7 +25,7 @@ exports.getFeaturedMenus = catchAsync(async(req,res,next) =>{
         status: 'success',
         results: featuredMenus.length,
         data: featuredMenus
-        
+
     })
 
 })
@@ -44,13 +44,32 @@ exports.getMenu = catchAsync(async (req, res, next) => {
 
 
 exports.createMenu = catchAsync(async (req, res,next) => {    
+
+    const {name,category,price,description,ingredients,image}= req.body
+
+
+    let cloudinaryResponse = null
+
+    if(image){
+        cloudinaryResponse = await cloudinary.uploader.upload(image, {
+            folder: 'menus',
+            })           
+
+    }
     
-        const newMenu = await Menu.create(req.body);         
+        const newMenu = await Menu.create( {
+            name,
+            category,
+            price,
+            description,
+            ingredients,
+            image: cloudinaryResponse?.secure_url ? cloudinaryResponse.secure_url : ""
+        });         
         res.status(201).json({
             status: 'success',
             data: newMenu
         });
-    
+      
 })
 
 exports.updateMenu =  catchAsync(async (req, res, next) => {
@@ -68,13 +87,3 @@ exports.updateMenu =  catchAsync(async (req, res, next) => {
         })
 })
 
-exports.deleteMenu =catchAsync(  async (req, res, next) => {
-    const id = req.params.id*1
-      const menu= await Menu.findByIdAndDelete(id)
-
-        if(!menu) return next(new AppError('No menu found with that ID', 404))
-        res.status(204).json({
-            status: 'success',
-            data: null
-          });    
-})
