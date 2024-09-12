@@ -87,3 +87,25 @@ exports.updateMenu =  catchAsync(async (req, res, next) => {
         })
 })
 
+exports.deleteMenu =catchAsync(  async (req, res, next) => {
+    const id = req.params.id*1
+      const menu= await Menu.findById(id)
+      
+      if(!menu) return next(new AppError('No menu found with that ID', 404))
+      
+        if(menu.image){
+        const publicId = menu.image.split('/').pop().split(".")[0];
+        await cloudinary.uploader.destroy(`menus/${publicId}`);
+        console.log('deleted image from cloudinary')
+
+      }
+      await Menu.findByIdAndDelete(id)
+
+        
+        res.status(204).json({
+            status: 'success',
+            data: null
+          });    
+})
+
+
