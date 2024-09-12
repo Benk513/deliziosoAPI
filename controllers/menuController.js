@@ -109,3 +109,12 @@ exports.deleteMenu =catchAsync(  async (req, res, next) => {
 })
 
 
+exports.getRecommandedMenus =catchAsync(  async (req, res, next) => {
+    const menus = await Menu.find({}).populate('reviews').sort({ rating: -1 }).
+    limit(3)
+    res.status(200).json({
+        status: 'success',
+        data: menus
+        })
+    })
+
