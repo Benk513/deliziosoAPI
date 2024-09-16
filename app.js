@@ -4,15 +4,25 @@ const AppError= require('./utils/appError')
 const globalErrorHandler = require('./controllers/errorController')
 const menuRouter = require('./routes/menuRoutes')
 const userRouter = require('./routes/userRoutes')
+const rateLimit = require('express-rate-limit')
+//const cartRouter = require('./routes/cartRoutes')
 
 // I create the express app
 const app = express()
 
-// MIDDLEWARES
+//GLOBAL MIDDLEWARES
 
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'))
 }
+
+const limiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 100, // limit each IP to 100 requests per windowMs
+    message:'Too many request from this IP, please try again in an hour!'
+
+})
+app.use('/api',limiter);
 
 app.use(express.json()) 
 app.use((req, res, next) => {
@@ -26,22 +36,20 @@ app.use((req, res, next) => {
     next();
 })
 
+app.use((req,res,next)=>{
+    console.log(req.method, req.url)
+    console.log(req.headers)
+
+    next()
+})
+
 // ROUTES
 app.get('/', (req, res) => {
     res.send("Welcome to the Delizioso Restaurant API")
 })
 app.use('/api/v1/menu', menuRouter)
 app.use('/api/v1/users', userRouter)
-
-// app.all('*', (req, res, next) => {
-//     res.status(404).json({
-//         status: 'fail',
-//         message: `Can't find ${req.originalUrl} on this server !`
-//     })
-
-    
-//     next()
-// })
+//pp.use('/api/v1/cart', cartRouter)
 
 
 app.all('*', (req, res, next) => {
