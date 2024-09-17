@@ -21,6 +21,8 @@ const reviewSchema = new mongoose.Schema({
     
 })
 
+const Review = mongoose.model('Review', reviewSchema)
+
 
  
 // user_id (Foreign Key to User.id)
