@@ -12,6 +12,7 @@ const cors = require('cors')
 const menuRouter = require('./routes/menuRoutes')
 const userRouter = require('./routes/userRoutes')
 const reviewRouter = require('./routes/reviewRoutes')
+const reservationRouter = require('./routes/reservationRoutes')
 //parse cookies into req
 const cookieParser =require('cookie-parser')
 //const cartRouter = require('./routes/cartRoutes')
@@ -118,6 +119,7 @@ app.get('/', (req, res) => {
 app.use('/api/v1/menu', menuRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/reviews',reviewRouter)
+app.use('/api/v1/reservations',reservationRouter)
 //pp.use('/api/v1/cart', cartRouter)
 
 
