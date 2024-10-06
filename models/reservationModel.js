@@ -19,7 +19,7 @@ const reservationSchema = new mongoose.Schema({
         lowercase:true,
         validate:[validator.isEmail,'Please provide a valid email']
     },
-    userID:{
+    userId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required:[true, 'A reservation should be made by a user']
