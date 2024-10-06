@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const validator =require ('validator')
 
 const menuSchema =new mongoose.Schema({
-    imageURL: {
+    image: {
         type: String,
         required: true,
         unique: true,
@@ -21,6 +21,10 @@ const menuSchema =new mongoose.Schema({
         type: String,
         trim: true,
         required: [true, 'A menu must have a category'],
+    },
+    isFeatured:{
+      type:Boolean,
+      default:false,
     },
 
     description: {
@@ -55,13 +59,40 @@ const menuSchema =new mongoose.Schema({
         min: [1, 'Rating must be above 1.0'],
         max: [5, 'Rating must be below 5.0']
       },
+      ratingsQuantity: {
+        type: Number,
+        default: 0
+        },
   
 
     createdAt: { type: Date, default: Date.now},
     updatedAt: { type: Date, default: Date.now },
 
-    availability:Boolean
+    availability:{
+      type:Boolean,
+      default:true
+    }
  
+},
+{
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+//i added the index on the schema to rapidly access the data when searching.
+
+/* The `menuSchema.index({name:1 ,category:1})` statement in the code is creating an index on the
+`name` and `category` fields of the `Menu` schema. This index is used to improve the performance of
+queries that involve searching or sorting based on these fields. */
+menuSchema.index({name:1 ,category:1})
+
+
+//make reference from the parent ref so to see his children.
+menuSchema.virtual('reviews',{
+  ref:'Review',
+  localField:'_id',
+  foreignField:'menu'
 })
+
 const Menu = mongoose.model('Menu', menuSchema)
 module.exports = Menu
