@@ -11,5 +11,6 @@ router.route('/')
 .post(authController.restrictTo('customer'),
     reviewController.createReview)
 
+router.route('/:id').delete(authController.restrictTo('customer,admin'),reviewController.deleteReview)
 
 module.exports =router;
