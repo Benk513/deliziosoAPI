@@ -41,7 +41,8 @@ const reservationSchema = new mongoose.Schema({
     },
     status:{
         type:String,
-        Enum:['pending', 'confirmed', 'completed', 'canceled']
+        Enum:['pending', 'confirmed', 'completed', 'canceled'],
+        default:'pending'
     }
 ,
     tableNumber:Number
@@ -51,6 +52,6 @@ const reservationSchema = new mongoose.Schema({
 }
 )
 
-const Reservation = mongoose.model('Reservation',userSchema)
+const Reservation = mongoose.model('Reservation',reservationSchema)
 
 module.exports = Reservation
