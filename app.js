@@ -35,7 +35,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 //set security http headers
-app.use(helmet())
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}))
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'))
 }
@@ -69,9 +71,6 @@ app.use((req, res, next) => {
     }
   });
   
-  
-  
-  
   //Data sanitization against NoSQL auery injection
 //remove all the injection through the body and params
 app.use(mongoSanitize())
@@ -84,8 +83,6 @@ app.use(hpp({
   // here put fields to be whitelisted (repeated as many times as possible)
   whitelist: ['price', 'limit', 'page']
 }))
-
-
 
 //define a static folder to serve files from public folder
 
