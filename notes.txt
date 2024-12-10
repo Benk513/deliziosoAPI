@@ -1,0 +1,469 @@
+MODELLING DATA AND ADVANCED MONGOOSE
+
+In this chapter, we will explore the following topics:
+- **Data Modelling**: We will learn how to create a data model for a given problem,
+- **Advanced Mongoose**: We will learn how to use Mongoose to interact with MongoDB, including
+- **Schema Validation**: We will learn how to validate data using Mongoose schema validation,
+- **Mongoose Hooks**: We will learn how to use Mongoose hooks to perform actions before and
+after document operations,
+- **Mongoose Aggregation**: We will learn how to use Mongoose aggregation to perform complex queries
+- **Mongoose Populate**: We will learn how to use Mongoose populate to retrieve related documents
+
+_____________________________________________
+
+CHILD REFERENCING
+
+child referencing : 
+- **Child Referencing**: We will learn how to use child referencing to create a one-to-many
+relationship between documents.
+- use case is for example 1 user can have many orders 
+
+in the Tour model ={
+    name: String,
+    price: Number,
+    ....
+    guides:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+            }
+    ]
+}
+
+here actually i want to make a reference to the child doc which is the user , the meaning is one tour can have many guides, they who are users 
+-------------------------
+now in the postman , when creating a new tour , in the guide arraay, 
+only specify the users guides with their ids , like here for example , one tour is created with 2 users guides taken from the user list
+[
+    "5ccb3ded5dc29ed1",
+    "5ccb3ded5dc29ed2",
+]
+---------------------------------
+now when you run , it will bring back the new tour created ,with guides ids only nothing as changed.
+
+
+_____________________________________________
+POPULATING TOUR GUIDES 
+
+to populate simply means eclater les ids du tableau des guides en object user complet.
+
+the populate process ALWAYS happens in a query , for that go to the tour controller and go to 
+the find method and add the populate method like this :
+in the populate method specify the field you want to eclater c 'guides'
+
+also you can simply select some fields of the populated field , like only name , price , age, location .... , for that do this 
+in the populate method specify the select method like this :
+const tour = await Tour.findById(req.params.id).populate('guides')
+populate({
+    path: 'guides',
+    select: 'name price'
+    })
+
+    this will solely select name and price and not take others
+
+now that only in the getOne Tour that we have expanded results of guides users , instead of copy and pasting the same populate to others ; getAll etc , let's do query middleware in the mongoose 
+
+which will allow to pre run before even saving
+
+this query middleware will run only in all the queries begining with find 
+before saving to the doc c
+
+tourSchema.pre(/^find/, function(next){
+    this.populate({
+        path: 'guides',
+        select: 'name price'
+        })
+        next()
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_____________________________________________
+
+
+Here is the complete database design for the Delizioso restaurant web application, covering all major tables, their fields, and relationships, along with explanations for the relationships between the tables.
+
+1. User Table
+Fields:
+id (Primary Key, UUID)
+name (String)
+email (String, Unique)
+password (Hashed String)
+phone (String)
+role (Enum: customer, admin, staff)
+loyalty_points (Integer)
+created_at (Timestamp)
+updated_at (Timestamp)
+
+2. Menu Table
+Fields:
+id (Primary Key, UUID)
+name (String)
+description (Text)
+price (Decimal)
+category (String)
+image_url (String)
+availability (Boolean)
+created_at (Timestamp)
+updated_at (Timestamp)
+
+3. Order Table
+Fields:
+id (Primary Key, UUID)
+user_id (Foreign Key to User.id)
+order_status (Enum: pending, confirmed, preparing, ready, delivered, canceled)
+payment_status (Enum: paid, unpaid, pending)
+total_amount (Decimal)
+delivery_address (String)
+created_at (Timestamp)
+updated_at (Timestamp)
+
+4. OrderItems Table
+Fields:
+id (Primary Key, UUID)
+order_id (Foreign Key to Order.id)
+menu_item_id (Foreign Key to Menu.id)
+quantity (Integer)
+price (Decimal)
+
+5. Reservation Table
+Fields:
+id (Primary Key, UUID)
+user_id (Foreign Key to User.id)
+table_number (Integer)
+reservation_time (Timestamp)
+status (Enum: pending, confirmed, completed, canceled)
+created_at (Timestamp)
+updated_at (Timestamp)
+
+6. Payment Table
+Fields:
+id (Primary Key, UUID)
+order_id (Foreign Key to Order.id)
+payment_method (Enum: card, paypal, cash)
+amount (Decimal)
+status (Enum: paid, pending, failed)
+payment_date (Timestamp)
+created_at (Timestamp)
+
+7. Review Table
+Fields:
+id (Primary Key, UUID)
+user_id (Foreign Key to User.id)
+menu_item_id (Foreign Key to Menu.id)
+rating (Integer)
+comment (Text)
+created_at (Timestamp)
+updated_at (Timestamp)
+
+8. Invoice Table
+Fields:
+id (Primary Key, UUID)
+order_id (Foreign Key to Order.id)
+invoice_number (String, Unique)
+total_amount (Decimal)
+payment_status (Enum: paid, unpaid, pending)
+issued_at (Timestamp)
+created_at (Timestamp)
+updated_at (Timestamp)
+
+9. Notification Table
+Fields:
+id (Primary Key, UUID)
+user_id (Foreign Key to User.id)
+type (String)
+message (Text)
+read (Boolean, Default: false)
+created_at (Timestamp)
+
+10. Table Management
+Fields:
+id (Primary Key, UUID)
+table_number (Integer, Unique)
+capacity (Integer)
+availability (Boolean)
+created_at (Timestamp)
+updated_at (Timestamp)
+
+
+_____________________________________________
+
+API ROUTES
+
+1. User Management
+ 
+GET /api/users/:id: Get a single user by ID (Admin only).
+PUT /api/users/:id/update: Update a user's profile by ID (Admin only).
+DELETE /api/users/:id/delete: Delete a user by ID (Admin only).
+
+  
+3. Order Management
+POST /api/orders: Create a new order.
+GET /api/orders: Get all orders (Admin only).
+GET /api/orders/me: Get orders of the logged-in user.
+GET /api/orders/:id: Get an order by ID.
+PUT /api/orders/:id/update: Update an order status (Admin only).
+DELETE /api/orders/:id: Cancel or delete an order.
+
+4. Reservation Management
+POST /api/reservations: Create a new reservation.
+GET /api/reservations: Get all reservations (Admin only).
+GET /api/reservations/me: Get reservations of the logged-in user.
+GET /api/reservations/:id: Get a reservation by ID.
+PUT /api/reservations/:id/update: Update reservation details (Admin only).
+DELETE /api/reservations/:id: Cancel or delete a reservation.
+
+5. Payment and Billing
+POST /api/payments: Process a new payment.
+GET /api/payments/:orderId: Get payment details for a specific order.
+POST /api/payments/verify: Verify payment status.
+
+ 
+
+
+7. Notification Management
+POST /api/notifications/send: Send notifications (Admin only).
+GET /api/notifications/me: Get notifications for the logged-in user.
+
+8. Admin Dashboard
+GET /api/admin/dashboard: Get analytics and metrics for the admin dashboard.
+GET /api/admin/orders: Get all orders with details (Admin only).
+GET /api/admin/menu: Manage all menu items (Admin only).
+GET /api/admin/reservations: View and manage all reservations (Admin only).
+GET /api/admin/users: View and manage all users (Admin only).
+
+
+9. Delivery and Tracking
+POST /api/delivery/assign: Assign a delivery person to an order.
+GET /api/delivery/status/:orderId: Get the delivery status of an order.
+PUT /api/delivery/status/:orderId/update: Update the delivery status of an order (Admin or staff).
+
+
+10. Authentication & Authorization
+POST /api/auth/social-login: Social media login (e.g., Facebook, Google).
+
+11. Loyalty Program
+GET /api/loyalty/me: Get loyalty points for the logged-in user.
+POST /api/loyalty/redeem: Redeem loyalty points for discounts or rewards.
+
+12. Miscellaneous
+GET /api/categories: Get a list of menu categories.
+GET /api/stats/sales: Get sales reports and analytics (Admin only).
+GET /api/stats/users: Get user-related statistics (Admin only).
+These API routes cover all the necessary endpoints to build a robust restaurant web application for Delizioso. They handle user management, order and reservation processes, payments, menu management, reviews, notifications, admin functionalities, and more.
+
+
+13. Table Management
+GET /api/tables: Get all available tables (Admin or Staff).
+POST /api/tables: Add a new table to the system (Admin only).
+PUT /api/tables/:id: Update table details (Admin only).
+DELETE /api/tables/:id: Remove a table from the system (Admin only).
+
+14. Promotions and Discounts
+GET /api/promotions: Get all available promotions and discounts.
+POST /api/promotions: Create a new promotion or discount (Admin only).
+PUT /api/promotions/:id: Update an existing promotion (Admin only).
+DELETE /api/promotions/:id: Delete a promotion or discount (Admin only).
+
+15. Favorites and Wish List
+POST /api/favorites/add: Add a menu item to the user’s favorites.
+GET /api/favorites: Get the logged-in user’s favorite menu items.
+DELETE /api/favorites/:itemId: Remove a menu item from favorites.
+
+16. Staff Management
+GET /api/staff: Get a list of all staff members (Admin only).
+POST /api/staff: Add a new staff member (Admin only).
+PUT /api/staff/:id: Update a staff member’s details (Admin only).
+DELETE /api/staff/:id: Remove a staff member (Admin only).
+GET /api/staff/roles: Get all possible staff roles (Admin only).
+
+17. Order Fulfillment for Staff
+GET /api/staff/orders: Get all assigned orders for the logged-in staff member.
+PUT /api/staff/orders/:id/status: Update the status of an order (e.g., “In Preparation”, “Ready for Pickup”) (Staff only).
+
+
+18. Delivery Partner Integration
+POST /api/delivery/partners: Integrate with a delivery service (e.g., Uber Eats, DoorDash).
+GET /api/delivery/partners: Get the list of delivery partners (Admin only).
+POST /api/delivery/order: Place an order with a delivery partner.
+
+
+19. Customer Feedback and Support
+POST /api/support/ticket: Submit a support ticket or feedback.
+GET /api/support/tickets: View all support tickets (Admin only).
+PUT /api/support/tickets/:id/resolve: Mark a support ticket as resolved (Admin only).
+DELETE /api/support/tickets/:id: Delete a support ticket (Admin only).
+
+
+20. Inventory Management
+GET /api/inventory: Get all available inventory items (Admin or Staff).
+POST /api/inventory: Add a new inventory item (Admin only).
+PUT /api/inventory/:id: Update inventory item details (Admin only).
+DELETE /api/inventory/:id: Remove an inventory item (Admin only).
+GET /api/inventory/stocks: Get current stock levels for items (Admin or Staff).
+
+
+21. Notifications and Alerts (Advanced)
+POST /api/notifications/admin: Send notifications to all users (Admin only).
+POST /api/notifications/reminder: Send reservation and order reminders.
+POST /api/notifications/order-status: Notify customers about their order status.
+
+
+22. Settings and Preferences
+GET /api/settings: Get the system settings (Admin only).
+PUT /api/settings/update: Update system-wide settings (Admin only).
+GET /api/settings/themes: Get available themes for the user interface.
+PUT /api/settings/themes/:id/apply: Apply a specific theme (Admin only).
+
+
+23. Multilingual Support
+GET /api/languages: Get available languages for the application.
+PUT /api/languages/:id/select: Set the preferred language for the user.
+POST /api/languages/translate: Translate a specific piece of content (Admin only).
+
+
+24. Analytics and Reporting (Extended)
+GET /api/reports/sales-summary: Get a summary of sales over a specific period (Admin only).
+GET /api/reports/user-engagement: Get reports on user engagement and activity.
+GET /api/reports/popular-items: Get a list of most popular menu items.
+GET /api/reports/inventory-usage: Get a report on inventory usage trends.
+
+     
+25. Security and Activity Logs
+GET /api/logs: Get a list of system logs and activities (Admin only).
+GET /api/logs/:id: Get a detailed view of a specific log entry (Admin only).
+POST /api/logs/search: Search logs for specific actions or keywords (Admin only).
+
+
+26. Session Management
+GET /api/sessions: Get a list of active sessions for the logged-in user.
+DELETE /api/sessions/:id: Terminate a specific session (e.g., if logged in on multiple devices).
+This extended set of API routes covers additional features such as inventory management, staff management, multilingual support, advanced notifications, analytics, and more, providing a comprehensive foundation for building a robust, full-featured restaurant management system for Delizioso.
+ 
+
+
+28. Export Sales Data (CSV & PDF)
+GET /api/reports/sales/csv: Export sales data as a CSV file (Admin only).
+GET /api/reports/sales/pdf: Export sales data as a PDF report (Admin only).
+GET /api/reports/reservations/csv: Export reservation data as a CSV file (Admin only).
+GET /api/reports/reservations/pdf: Export reservation data as a PDF report (Admin only).
+GET /api/reports/orders/csv: Export order details as a CSV file (Admin only).
+GET /api/reports/orders/pdf: Export order details as a PDF report (Admin only).
+GET /api/reports/users/csv: Export user data as a CSV file (Admin only).
+GET /api/reports/users/pdf: Export user data as a PDF report (Admin only).
+
+
+
+29. Generate Invoices
+POST /api/invoices/generate: Generate an invoice for an order, specifying orderId.
+GET /api/invoices/:id: Get details of a specific invoice by its ID.
+GET /api/invoices/order/:orderId: Get the invoice for a specific order.
+POST /api/invoices/batch-generate: Generate invoices for multiple orders (Admin only).
+
+
+
+30. Send Invoices to Clients
+POST /api/invoices/:id/send: Send a generated invoice to the customer via email, specifying invoiceId.
+POST /api/invoices/send-batch: Send multiple invoices to clients (Admin only).
+POST /api/invoices/:id/download: Allow clients to download an invoice in PDF format.
+
+
+31. Sales Data Extraction for Tax Reporting
+GET /api/reports/tax-summary/csv: Extract a tax summary of sales for tax reporting in CSV format (Admin only).
+GET /api/reports/tax-summary/pdf: Extract a tax summary of sales for tax reporting in PDF format (Admin only).
+
+
+32. Email and Notification Management
+POST /api/emails/send-confirmation: Send an order confirmation email to the client.
+POST /api/emails/send-reservation-confirmation: Send a reservation confirmation email to the client.
+POST /api/emails/send-delivery-update: Send a delivery status update to the customer via email.
+POST /api/emails/send-promotion: Send promotional emails to customers.
+POST /api/emails/send-reminder: Send a reservation or order reminder via email or SMS.
+
+
+33. Customer Invoice History
+GET /api/users/me/invoices: Get a list of all invoices for the logged-in user.
+GET /api/users/:id/invoices: Get all invoices for a specific user (Admin only).
+
+
+34. Admin Reports and Invoices Management
+GET /api/admin/invoices: Get a list of all invoices generated in the system (Admin only).
+GET /api/admin/invoices/:id: View details of a specific invoice (Admin only).
+POST /api/admin/invoices/generate-summary: Generate a summary of all invoices over a time period for reporting (Admin only).
+
+
+35. Automated Email Reminders
+POST /api/notifications/reminder/orders: Automatically send reminder emails to customers who haven’t completed their order.
+POST /api/notifications/reminder/reservations: Send reminder emails or SMS for upcoming reservations.
+POST /api/notifications/reminder/invoices: Send payment reminders to customers with pending invoices.
+
+
+36. Invoice Payment Status
+PUT /api/invoices/:id/update-status: Update the payment status of an invoice (Paid, Unpaid, Pending) (Admin only).
+GET /api/invoices/:id/payment-status: Get the current payment status of an invoice.
+
+
+TODO 
+
+RESERVATION
+-create a function for the reservation model to verify that the reservation must not be one week before event 
+
+-once the user make a reservation the system , will send him a notification of 
+the confirmation of the reservation via email , so the user can be setOff.
+
+-one cannot take a date and time of reservation that already taken
+
+
+
+MENU 
+- create a function to add a new menu
+- create a function to delete a menu with it image_url
+- create a function to update a menu with its image_url
+- create a function to get all menus
+- create a function to get a menu by id
+- create a function to get all menus by category
+- create a function to get all menus by price range
+- create a function to get all menus by name
+- create a function to get all menus by name and category and price range and image_url and description
+-possibility to upload image for menu , 
+-possibility to resize the image size and format 
+
+
+
+FAVORITE MENU
+
+-initially , the favorite Menu is empty , on creation of the user
+-possibility to add a menu to the favorite menu
+-possibility to delete a menu from the favorite menu
+-possibility to get all favorite menu of a user
+-possibility to get a favorite menu of a user by id
+
+-the user cannot add the same menu two times to the favorite menu , 
+-the user cannot delete a menu that is not in the favorite menu ,
+
+-create a function to add a menu to favorite   

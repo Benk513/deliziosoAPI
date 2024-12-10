@@ -66,7 +66,6 @@ exports.uploadPhoto =  catchAsync(async(req,res,next) =>{
             data: user
         })
         
-
 })
 
 exports.getMe = catchAsync( async(req,res,next)=>{
@@ -81,10 +80,7 @@ exports.getMe = catchAsync( async(req,res,next)=>{
 
 // update me (profile)
 exports.updateMe =async(req,res,next) =>{
-    console.log(req.file)
-    console.log(req.body)
-
-    //1 create error if user Posts password data
+       //1 create error if user Posts password data
     if (req.body.password || req.body.passwordConfirm) {
         return next(new AppError('This route is not for password updates. Please use /updatepassword.', 400))
     }
@@ -99,7 +95,7 @@ exports.updateMe =async(req,res,next) =>{
 
     // this function allow to filter parameter from the req.body bcoz we do not want the user to change his status by himself
     // 2) filter out unwanted fields names that are not allowed to be updated
-    const filteredBody = filteredObj(req.body, 'name', 'email')
+    const filteredBody = filteredObj(req.body, 'name', 'email','bio')
 
     if(req.file) filteredBody.photo = req.file.filename;
 

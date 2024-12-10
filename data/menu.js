@@ -35,3 +35,7 @@ console.log(menu.createdAt)
 // rating (Number, Optional): The average rating of the item based on customer reviews.
 // createdAt (Date, Default: Date.now): The date and time when the menu item was added.
 // updatedAt (Date, Default: Date.now): The date and time when the menu item was last updated.
+
+const b ="salut"
+
+console.log(b) // quokka
