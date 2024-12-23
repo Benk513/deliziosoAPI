@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const validator =require ('validator')
 
 const menuSchema =new mongoose.Schema({
-    image: {
+    imageURL: {
         type: String,
         required: true,
         unique: true,

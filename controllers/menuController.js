@@ -29,7 +29,7 @@ const upload = multer({
     limits: { fileSize: 500000 },
 })
 
-exports.uploadMenuPhoto= upload.single('image')
+exports.uploadMenuPhoto= upload.single('imageURL')
 
 exports.getAllMenus = catchAsync(async (req, res, next) => {
     //EXECUTE QUERY       
@@ -83,7 +83,7 @@ exports.createMenu = catchAsync(async (req, res, next) => {
         price,
         description,
         ingredients,
-        image: req.file.filename
+        imageURL: req.file.filename
     });
     res.status(201).json({
         status: 'success',
