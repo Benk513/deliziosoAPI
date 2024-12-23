@@ -25,6 +25,7 @@ const app = express()
 
 // app.use(cors({
 //     origin: '*',
+// origin: 'http://localhost:5173',
      
 
 const corsOptions = {
@@ -44,7 +45,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const limiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 500, // limit each IP to 100 requests per windowMs
+    max: 5000, // limit each IP to 100 requests per windowMs
     message:'Too many request from this IP, please try again in an hour!'
 
 })

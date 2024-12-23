@@ -11,8 +11,8 @@ router.route('/category/:category').get(menuController.getRecommandedMenus)
 
 router
   .route('/')
-  .get(authController.protect,authController.restrictTo('admin','manager','customer'),menuController.getAllMenus)
-  .post(menuController.createMenu);
+  .get(menuController.getAllMenus)
+  .post(menuController.uploadMenuPhoto,menuController.createMenu);
   
 router.route('/:id')
     .get(menuController.getMenu)
@@ -22,3 +22,16 @@ router.route('/:id')
 
 router.use('/:menuId/reviews',reviewRouter)
 module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
+
+// get(authController.protect,authController.restrictTo('admin','manager','customer'),menuController.getAllMenus)
