@@ -26,7 +26,6 @@ const app = express()
 // app.use(cors({
 //     origin: '*',
 // origin: 'http://localhost:5173',
-     
 
 const corsOptions = {
     origin: 'http://localhost:5173',  // Allow only your frontend origin

@@ -44,6 +44,8 @@ const filteredObj = (obj, ...allowedFields) => {
 
 exports.uploadUserPhoto = upload.single('file')
 
+
+
 exports.getAllUsers =async(req, res, next) =>{
 
    const users = await User.find()
@@ -95,7 +97,7 @@ exports.updateMe =async(req,res,next) =>{
 
     // this function allow to filter parameter from the req.body bcoz we do not want the user to change his status by himself
     // 2) filter out unwanted fields names that are not allowed to be updated
-    const filteredBody = filteredObj(req.body, 'name', 'email','bio')
+    const filteredBody = filteredObj(req.body, 'name', 'email','bio', 'phone','address')
 
     if(req.file) filteredBody.photo = req.file.filename;
 
@@ -108,9 +110,8 @@ exports.updateMe =async(req,res,next) =>{
 
     res.status(200).json({
         status: 'success',
-        data:{
-            user:updatedUser
-        }
+        data:updatedUser
+        
     })
 
 }
